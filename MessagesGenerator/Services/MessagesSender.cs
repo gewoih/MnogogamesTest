@@ -23,7 +23,7 @@ namespace MessagesGenerator.Services
         {
             string generatedString = MessagesGenerator.GetRandomString();
             var generatedPriority = MessagesGenerator.GetRandomEnumValue<Priority>();
-            Message generatedMessage = new(generatedString, generatedPriority);
+            Message generatedMessage = new(generatedString);
 
             SendMessageToRabbiqMQ(generatedMessage, generatedPriority);
 
