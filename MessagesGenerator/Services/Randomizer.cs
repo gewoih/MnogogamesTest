@@ -1,6 +1,6 @@
 ﻿namespace MessagesGenerator.Services
 {
-    internal static class MessagesGenerator
+    internal static class Randomizer
     {
         private readonly static Random _random = new();
 
