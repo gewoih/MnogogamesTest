@@ -1,6 +1,7 @@
 ﻿using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
+using SharedLibrary;
 
 namespace MessagesHandler
 {
@@ -10,10 +11,10 @@ namespace MessagesHandler
         {
             var factory = new ConnectionFactory()
             {
-                HostName = "95.163.241.218",
+                HostName = MainSettings.Default.RabbitMQHostName,
                 Port = Protocols.DefaultProtocol.DefaultPort,
-                UserName = "root",
-                Password = "root",
+                UserName = MainSettings.Default.RabbitMQUsername,
+                Password = MainSettings.Default.RabbitMQPassword,
                 VirtualHost = "/",
                 AutomaticRecoveryEnabled = true,
             };
@@ -30,7 +31,7 @@ namespace MessagesHandler
 
             while (true)
             {
-                channel.BasicConsume(queue: "messagesWithPriorities",
+                channel.BasicConsume(queue: MainSettings.Default.RabbitMQMessagesQueueName,
                                      autoAck: false,
                                      consumer: consumer);
 

@@ -1,5 +1,7 @@
 ﻿using MessagesGenerator.Services;
+using Microsoft.VisualBasic;
 using RabbitMQ.Client;
+using SharedLibrary;
 
 namespace MessagesGenerator
 {
@@ -9,10 +11,10 @@ namespace MessagesGenerator
         {
             var factory = new ConnectionFactory()
             { 
-                HostName = "95.163.241.218", 
+                HostName = MainSettings.Default.RabbitMQHostName, 
                 Port = Protocols.DefaultProtocol.DefaultPort, 
-                UserName = "root", 
-                Password = "root",
+                UserName = MainSettings.Default.RabbitMQUsername, 
+                Password = MainSettings.Default.RabbitMQPassword,
                 VirtualHost = "/",
                 AutomaticRecoveryEnabled = true,
             };
@@ -20,7 +22,7 @@ namespace MessagesGenerator
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
-            MessagesSender messagesSender = new(channel, TimeSpan.FromSeconds(1));
+            MessagesSender messagesSender = new(channel, MainSettings.Default.SendingMessagesIntervalInMilliseconds);
 
             Console.ReadKey();
         }
