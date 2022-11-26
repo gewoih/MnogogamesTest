@@ -2,6 +2,9 @@
 using RabbitMQ.Client.Events;
 using System.Text;
 using SharedLibrary;
+using MessagesHandler.Services;
+using Newtonsoft.Json;
+using SharedLibrary.Models;
 
 namespace MessagesHandler
 {
@@ -22,21 +25,22 @@ namespace MessagesHandler
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-            };
+            MessagesHandlerService handler = new(channel, MainSettings.Default.HandlingMessagesIntervalInMilliseconds);
+            handler.OnNewMessageReceived += OnNewMessageReceived;
+            handler.StartMessagesHandling();
 
-            while (true)
-            {
-                channel.BasicConsume(queue: MainSettings.Default.RabbitMQMessagesQueueName,
-                                     autoAck: false,
-                                     consumer: consumer);
+            Console.ReadKey();
+        }
 
-                Thread.Sleep(1000);
-            }
+        private static void OnNewMessageReceived(BasicGetResult basicGetResult)
+        {
+            var body = basicGetResult.Body.ToArray();
+            var encodedData = Encoding.UTF8.GetString(body);
+
+            var message = JsonConvert.DeserializeObject<Message>(encodedData);
+
+
+            Console.WriteLine($"Received new message: {message} {Environment.NewLine}");
         }
     }
 }
