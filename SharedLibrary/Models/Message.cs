@@ -14,5 +14,10 @@ namespace SharedLibrary.Models
             CreationDate = DateTime.Now;
             Data = data;
         }
+
+        public override string ToString()
+        {
+            return $"[Id: {Id}][Created: {CreationDate}][Data: {Data}]";
+        }
     }
 }
