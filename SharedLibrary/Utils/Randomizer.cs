@@ -1,6 +1,6 @@
-﻿namespace MessagesGenerator.Services
+﻿namespace SharedLibrary.Utils
 {
-    internal static class Randomizer
+    public static class Randomizer
     {
         private readonly static Random _random = new();
 
