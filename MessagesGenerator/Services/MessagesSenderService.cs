@@ -1,28 +1,39 @@
 ﻿using Newtonsoft.Json;
 using RabbitMQ.Client;
+using SharedLibrary;
 using SharedLibrary.Enums;
 using SharedLibrary.Models;
+using SharedLibrary.Utils;
 using System.Text;
 
 namespace MessagesGenerator.Services
 {
-    internal sealed class MessagesSender
+    internal sealed class MessagesSenderService
     {
         private readonly TimeSpan _sendingInterval;
         private readonly IModel _rabbitmqModel;
+        private Timer _timer;
 
-        public MessagesSender(IModel rabbitMqModel, TimeSpan sendingInterval)
+        public MessagesSenderService(IModel rabbitMqModel, TimeSpan sendingInterval)
         {
             _rabbitmqModel = rabbitMqModel;
             _sendingInterval = sendingInterval;
-
-            Timer timer = new(MessagesSenderHandler, null, TimeSpan.FromSeconds(0), _sendingInterval);
         }
 
-        private void MessagesSenderHandler(object obj)
+        public void StartMessagesSending()
         {
-            string generatedString = MessagesGenerator.GetRandomString();
-            var generatedPriority = MessagesGenerator.GetRandomEnumValue<Priority>();
+            _timer = new(MessagesSenderHandler, null, TimeSpan.FromSeconds(0), _sendingInterval);
+        }
+
+        public void StopMessagesSending()
+        {
+            _timer?.Dispose();
+        }
+
+        private void MessagesSenderHandler(object? obj)
+        {
+            string generatedString = Randomizer.GetRandomString();
+            var generatedPriority = Randomizer.GetRandomEnumValue<Priority>();
             Message generatedMessage = new(generatedString);
 
             SendMessageToRabbiqMQ(generatedMessage, generatedPriority);
@@ -40,7 +51,7 @@ namespace MessagesGenerator.Services
 
             _rabbitmqModel.BasicPublish(
                 exchange: string.Empty,
-                routingKey: "messagesWithPriorities",
+                routingKey: MainSettings.Default.RabbitMQMessagesQueueName,
                 basicProperties: properties,
                 body: body);
         }
