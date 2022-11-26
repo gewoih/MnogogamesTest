@@ -22,7 +22,7 @@ namespace MessagesGenerator
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
 
-            MessagesSender messagesSender = new(channel, MainSettings.Default.SendingMessagesIntervalInMilliseconds);
+            MessagesSenderService messagesSender = new(channel, MainSettings.Default.SendingMessagesIntervalInMilliseconds);
 
             Console.ReadKey();
         }
