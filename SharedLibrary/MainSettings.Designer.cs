@@ -25,18 +25,6 @@ namespace SharedLibrary {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("95.163.241.218")]
-        public string RabbitMQHostName {
-            get {
-                return ((string)(this["RabbitMQHostName"]));
-            }
-            set {
-                this["RabbitMQHostName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("root")]
         public string RabbitMQUsername {
             get {
@@ -92,6 +80,16 @@ namespace SharedLibrary {
             }
             set {
                 this["HandlingMessagesIntervalInMilliseconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("95.163.241.218")]
+        public string RabbitMQHostName {
+            get {
+                return ((string)(this["RabbitMQHostName"]));
             }
         }
     }
