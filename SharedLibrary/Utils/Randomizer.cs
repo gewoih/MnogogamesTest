@@ -4,7 +4,7 @@
     {
         private readonly static Random _random = new();
 
-        public static string GetRandomString(int length = 6)
+        public static string GetRandomString(int length = 4)
         {
             const string charsSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
