@@ -8,8 +8,13 @@ namespace MessagesHandler.Services
         private readonly TimeSpan _handlingInterval;
         private readonly IModel _rabbitmqModel;
         private Timer? _timer;
+
+        /// <summary>
+        /// Event that will be invoked when the message is successfully received.
+        /// </summary>
         public event Action<BasicGetResult>? OnMessageReceived;
 
+        /// <param name="handlingInterval">The interval for handling messages from the RabbitMQ</param>
         public MessagesHandlerService(IModel rabbitMqModel, TimeSpan handlingInterval)
         {
             _rabbitmqModel = rabbitMqModel;
@@ -17,11 +22,17 @@ namespace MessagesHandler.Services
             OnMessageReceived += MessagesHandlerService_OnNewMessageReceived;
         }
 
+        /// <summary>
+        /// Starts messages handling from RabbitMQ at the interval specified in constructor.
+        /// </summary>
         public void StartMessagesHandling()
         {
             _timer = new(HandleNewMessage, null, TimeSpan.FromSeconds(0), _handlingInterval);
         }
 
+        /// <summary>
+        /// Stops handling messages from RabbitMQ.
+        /// </summary>
         public void StopMessagesHandling()
         {
             _timer?.Dispose();

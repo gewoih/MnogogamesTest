@@ -13,19 +13,30 @@ namespace MessagesGenerator.Services
         private readonly TimeSpan _sendingInterval;
         private readonly IModel _rabbitmqModel;
         private Timer? _timer;
+
+        /// <summary>
+        /// Event that will be invoked when the message is  successfully sent.
+        /// </summary>
         public event Action<KeyValuePair<Message, Priority>>? OnMessageSended;
 
+        /// <param name="sendingInterval">The interval for sending messages to the RabbitMQ</param>
         public MessagesSenderService(IModel rabbitMqModel, TimeSpan sendingInterval)
         {
             _rabbitmqModel = rabbitMqModel;
             _sendingInterval = sendingInterval;
         }
 
+        /// <summary>
+        /// Starts sending messages to RabbitMQ at the interval specified in constructor.
+        /// </summary>
         public void StartMessagesSending()
         {
             _timer = new(MessagesSenderHandler, null, TimeSpan.FromSeconds(0), _sendingInterval);
         }
 
+        /// <summary>
+        /// Stops sending messages to RabbitMQ.
+        /// </summary>
         public void StopMessagesSending()
         {
             _timer?.Dispose();
@@ -35,17 +46,17 @@ namespace MessagesGenerator.Services
         {
             var generatedString = Randomizer.GetRandomString();
             var generatedPriority = Randomizer.GetRandomEnumValue<Priority>();
-            Message generatedMessage = new(generatedString);
+            var generatedMessage = new Message(generatedString);
 
-            SendMessageToRabbiqMQ(generatedMessage, generatedPriority);
+            SendMessageToRabbitMQ(generatedMessage, generatedPriority);
         }
 
-        private void SendMessageToRabbiqMQ(Message message, Priority priority)
+        private void SendMessageToRabbitMQ(Message message, Priority priority)
         {
             var properties = _rabbitmqModel.CreateBasicProperties();
             properties.Priority = (byte)priority;
 
-            string? serializedMessage = JsonConvert.SerializeObject(message);
+            var serializedMessage = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(serializedMessage);
 
             _rabbitmqModel.BasicPublish(
