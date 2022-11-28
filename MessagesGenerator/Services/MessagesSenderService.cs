@@ -12,7 +12,8 @@ namespace MessagesGenerator.Services
     {
         private readonly TimeSpan _sendingInterval;
         private readonly IModel _rabbitmqModel;
-        private Timer _timer;
+        private Timer? _timer;
+        public event Action<KeyValuePair<Message, Priority>>? OnMessageSended;
 
         public MessagesSenderService(IModel rabbitMqModel, TimeSpan sendingInterval)
         {
@@ -32,21 +33,19 @@ namespace MessagesGenerator.Services
 
         private void MessagesSenderHandler(object? obj)
         {
-            string generatedString = Randomizer.GetRandomString();
+            var generatedString = Randomizer.GetRandomString();
             var generatedPriority = Randomizer.GetRandomEnumValue<Priority>();
             Message generatedMessage = new(generatedString);
 
             SendMessageToRabbiqMQ(generatedMessage, generatedPriority);
-
-            Thread.Sleep(_sendingInterval);
         }
 
         private void SendMessageToRabbiqMQ(Message message, Priority priority)
         {
-            IBasicProperties properties = _rabbitmqModel.CreateBasicProperties();
+            var properties = _rabbitmqModel.CreateBasicProperties();
             properties.Priority = (byte)priority;
 
-            string serializedMessage = JsonConvert.SerializeObject(message);
+            string? serializedMessage = JsonConvert.SerializeObject(message);
             var body = Encoding.UTF8.GetBytes(serializedMessage);
 
             _rabbitmqModel.BasicPublish(
@@ -54,6 +53,8 @@ namespace MessagesGenerator.Services
                 routingKey: MainSettings.Default.RabbitMQMessagesQueueName,
                 basicProperties: properties,
                 body: body);
+
+            OnMessageSended?.Invoke(new(message, priority));
         }
     }
 }
