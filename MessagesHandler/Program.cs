@@ -26,7 +26,7 @@ namespace MessagesHandler
             using var channel = connection.CreateModel();
 
             MessagesHandlerService handler = new(channel, MainSettings.Default.HandlingMessagesIntervalInMilliseconds);
-            handler.OnNewMessageReceived += OnNewMessageReceived;
+            handler.OnMessageReceived += OnNewMessageReceived;
             handler.StartMessagesHandling();
 
             Console.ReadKey();
@@ -36,11 +36,9 @@ namespace MessagesHandler
         {
             var body = basicGetResult.Body.ToArray();
             var encodedData = Encoding.UTF8.GetString(body);
-
             var message = JsonConvert.DeserializeObject<Message>(encodedData);
 
-
-            Console.WriteLine($"Received new message: {message} {Environment.NewLine}");
+            Console.WriteLine($"Received new message: {message} with priority={basicGetResult.BasicProperties.Priority} {Environment.NewLine}");
         }
     }
 }
