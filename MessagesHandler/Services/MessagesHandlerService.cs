@@ -7,15 +7,14 @@ namespace MessagesHandler.Services
     {
         private readonly TimeSpan _handlingInterval;
         private readonly IModel _rabbitmqModel;
-        private Timer _timer;
-        public event Action<BasicGetResult> OnNewMessageReceived;
-
+        private Timer? _timer;
+        public event Action<BasicGetResult>? OnMessageReceived;
 
         public MessagesHandlerService(IModel rabbitMqModel, TimeSpan handlingInterval)
         {
             _rabbitmqModel = rabbitMqModel;
             _handlingInterval = handlingInterval;
-            OnNewMessageReceived += MessagesHandlerService_OnNewMessageReceived;
+            OnMessageReceived += MessagesHandlerService_OnNewMessageReceived;
         }
 
         public void StartMessagesHandling()
@@ -31,9 +30,11 @@ namespace MessagesHandler.Services
         private void HandleNewMessage(object? obj)
         {
             var result = _rabbitmqModel.BasicGet(MainSettings.Default.RabbitMQMessagesQueueName, false);
-            OnNewMessageReceived(result);
 
-            Thread.Sleep(_handlingInterval);
+            if (result is not null)
+            {
+                OnMessageReceived?.Invoke(result);
+            }
         }
 
         private void MessagesHandlerService_OnNewMessageReceived(BasicGetResult basicGetResult)
