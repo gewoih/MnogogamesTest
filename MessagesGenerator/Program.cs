@@ -1,7 +1,8 @@
 ﻿using MessagesGenerator.Services;
-using Microsoft.VisualBasic;
 using RabbitMQ.Client;
 using SharedLibrary;
+using SharedLibrary.Enums;
+using SharedLibrary.Models;
 
 namespace MessagesGenerator
 {
@@ -23,8 +24,15 @@ namespace MessagesGenerator
             using var channel = connection.CreateModel();
 
             MessagesSenderService messagesSender = new(channel, MainSettings.Default.SendingMessagesIntervalInMilliseconds);
+            messagesSender.OnMessageSended += MessagesSender_OnMessageSended;
+            messagesSender.StartMessagesSending();
 
             Console.ReadKey();
+        }
+
+        private static void MessagesSender_OnMessageSended(KeyValuePair<Message, Priority> messageWithPriority)
+        {
+            Console.WriteLine($"Sended message {messageWithPriority.Key} with priority={(int)messageWithPriority.Value} {Environment.NewLine}");
         }
     }
 }
