@@ -1,6 +1,4 @@
-﻿using SharedLibrary.Enums;
-
-namespace SharedLibrary.Models
+﻿namespace SharedLibrary.Models
 {
     public sealed class Message
     {
