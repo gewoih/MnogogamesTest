@@ -6,10 +6,10 @@
         public readonly DateTime CreationDate;
         public readonly string Data;
 
-        public Message(string data)
+        public Message(string data, DateTime creationDate)
         {
             Id = Guid.NewGuid();
-            CreationDate = DateTime.Now;
+            CreationDate = creationDate;
             Data = data;
         }
 
