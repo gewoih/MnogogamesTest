@@ -3,6 +3,9 @@ using SharedLibrary;
 
 namespace MessagesHandler.Services
 {
+    /// <summary>
+    /// Service responsible for handling messages from RabbitMQ at the specified interval.
+    /// </summary>
     public sealed class MessagesHandlerService
     {
         private readonly TimeSpan _handlingInterval;

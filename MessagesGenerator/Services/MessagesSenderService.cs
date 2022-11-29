@@ -8,14 +8,17 @@ using System.Text;
 
 namespace MessagesGenerator.Services
 {
-    internal sealed class MessagesSenderService
+    /// <summary>
+    /// Service responsible for sending generated messages to RabbitMQ at the specified interval.
+    /// </summary>
+    public sealed class MessagesSenderService
     {
         private readonly TimeSpan _sendingInterval;
         private readonly IModel _rabbitmqModel;
         private Timer? _timer;
 
         /// <summary>
-        /// Event that will be invoked when the message is  successfully sent.
+        /// Event that will be invoked when the message is successfully sent.
         /// </summary>
         public event Action<KeyValuePair<Message, Priority>>? OnMessageSended;
 
@@ -46,7 +49,7 @@ namespace MessagesGenerator.Services
         {
             var generatedString = Randomizer.GetRandomString();
             var generatedPriority = Randomizer.GetRandomEnumValue<Priority>();
-            var generatedMessage = new Message(generatedString);
+            var generatedMessage = new Message(generatedString, DateTime.Now);
 
             SendMessageToRabbitMQ(generatedMessage, generatedPriority);
         }
